@@ -1,4 +1,5 @@
-**/.venv/
+.env
 **/seen.json
-**/__pycache__/
-**/.env
+*.log
+debug_page.html
+__pycache__/

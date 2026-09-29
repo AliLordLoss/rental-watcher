@@ -34,7 +34,6 @@ SEARCH_URL = (
     "https://www.pararius.com/apartments/rotterdam/apartment/0-2250/1-bedrooms"
 )
 SEEN_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "seen.json")
-CHECK_INTERVAL = 600  # seconds between checks when running as a loop
 
 # Load email settings from a .env file next to this script.
 # The file uses shell-export format, so you can also `source .env`:
@@ -246,10 +245,6 @@ def send_email(msg: MIMEMultipart) -> None:
 
 # ---------------------------------------------------------------- main ----
 def main() -> None:
-    # NOTE: must be computed BEFORE save_seen() writes the file
-    first_run = not os.path.exists(SEEN_FILE)
-    first_run = False
-
     html = fetch(SEARCH_URL)
     listings = parse_listings(html, SEARCH_URL)
 
@@ -276,10 +271,7 @@ def main() -> None:
 
     save_seen(seen)
 
-    if first_run:
-        log.info("first run: recorded %d listings as baseline, no email sent "
-                 "(future runs email only listings not in this baseline)", len(listings))
-    elif not new:
+    if not new:
         log.info("no new listings since last check, no email sent")
     else:
         log.info("emailing %d new listing(s) to %s", len(new), MAIL_TO)
