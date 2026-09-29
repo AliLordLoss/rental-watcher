@@ -43,6 +43,13 @@ playwright install chromium
 The `playwright install chromium` step downloads Playwright's own browser —
 no system Chrome needed.
 
+On a Linux server, install Chromium's system libraries as well (run as root or
+with `sudo`, also make sure the venv is active):
+
+```bash
+playwright install-deps chromium
+```
+
 ### 2. Configure the search URLs
 
 Each watcher has a `SEARCH_URL` at the top of its file. Apply all filters
@@ -114,12 +121,12 @@ Notes:
 
 ## How it works
 
-| | Pararius watcher | Funda watcher |
-|---|---|---|
+|       | Pararius watcher                                            | Funda watcher                                                                     |
+| ----- | ----------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | Fetch | `requests` with browser headers; Playwright fallback on 403 | Playwright primary (Funda's bot protection blocks plain `requests` almost always) |
-| Parse | CSS selectors (`section.listing-search-item`) | Defensive regex-based card parsing |
-| State | `seen.json` per folder, 90-day auto-prune | same |
-| Email | HTML + plain text: listing, price, area, address | HTML + plain text: title, price, area, address |
+| Parse | CSS selectors (`section.listing-search-item`)               | Defensive regex-based card parsing                                                |
+| State | `seen.json` per folder, 90-day auto-prune                   | same                                                                              |
+| Email | HTML + plain text: listing, price, area, address            | HTML + plain text: title, price, area, address                                    |
 
 Both scripts are idempotent, write state atomically, and are safe to run
 from overlapping cron jobs.
@@ -169,11 +176,11 @@ from overlapping cron jobs.
 
 ## Files
 
-| File | Purpose |
-|---|---|
-| `run.sh` | runs all watchers once; use in cron |
-| `pararius/pararius_watcher.py` | Pararius watcher |
-| `funda/funda_watcher.py` | Funda watcher |
-| `.env` | SMTP credentials (gitignored, root or per-folder) |
-| `*/seen.json` | per-site seen-listing database (auto-created) |
-| `watcher.log` | cron output |
+| File                           | Purpose                                           |
+| ------------------------------ | ------------------------------------------------- |
+| `run.sh`                       | runs all watchers once; use in cron               |
+| `pararius/pararius_watcher.py` | Pararius watcher                                  |
+| `funda/funda_watcher.py`       | Funda watcher                                     |
+| `.env`                         | SMTP credentials (gitignored, root or per-folder) |
+| `*/seen.json`                  | per-site seen-listing database (auto-created)     |
+| `watcher.log`                  | cron output                                       |
